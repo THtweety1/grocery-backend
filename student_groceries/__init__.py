@@ -1,5 +1,5 @@
 from flask import Flask
-from extensions import db, migrate
+from extensions import db, migrate  # <-- from root-level extensions.py
 
 
 def create_app(config_name=None):
@@ -22,5 +22,6 @@ def create_app(config_name=None):
     from student_groceries.routes import main_bp
 
     app.register_blueprint(main_bp)
+    from student_groceries import models  # ensures User is registered
 
     return app
