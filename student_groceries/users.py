@@ -6,13 +6,26 @@ from student_groceries.models import User
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 
-@users_bp.get("/me")
+@users_bp.get("")
 @token_required
-def get_user_profile():
+def list_users():
+    if g.current_user.role != "admin":
+        return jsonify({
+            "error": "Forbidden",
+            "details": {"role": "Admin privileges are required to access this resource."}
+        }), 403
+
+    users = User.query.order_by(User.id.asc()).all()
     return jsonify({
-        "id": g.current_user.id,
-        "username": g.current_user.username,
-        "created_at": g.current_user.created_at.isoformat() if g.current_user.created_at else None,
+        "users": [
+            {
+                "id": user.id,
+                "username": user.username,
+                "role": user.role,
+                "created_at": user.created_at.isoformat() if user.created_at else None,
+            }
+            for user in users
+        ]
     }), 200
 
 

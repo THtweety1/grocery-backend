@@ -115,7 +115,7 @@ def login():
 
     payload = {
         "sub": str(user.id),
-        "role": "user",
+        "role": user.role,
         "exp": datetime.now(timezone.utc) + timedelta(minutes=lifetime_minutes),
     }
 
