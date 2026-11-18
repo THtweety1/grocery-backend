@@ -88,3 +88,13 @@ def list_items():
         .all()
     )
     return jsonify([item.to_dict() for item in items]), 200
+
+
+@items_bp.get("/<int:item_id>")
+@token_required
+def get_item(item_id):
+    item = db.session.get(GroceryItem, item_id)
+    if item is None:
+        return jsonify({"error": "Item not found"}), 404
+
+    return jsonify(item.to_dict()), 200
