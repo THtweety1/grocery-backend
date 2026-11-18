@@ -23,8 +23,10 @@ def create_app(config_name=None):
     from student_groceries.routes import main_bp
     from student_groceries.auth import auth_bp
     from student_groceries.users import users_bp
+    from student_groceries.items import items_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
+    app.register_blueprint(items_bp)
     return app
