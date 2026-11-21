@@ -1,7 +1,7 @@
 import math
 from flask import Blueprint, g, jsonify, request
 from extensions import db
-from student_groceries.auth import token_required
+from student_groceries.security import token_required
 from student_groceries.models import GroceryItem
 
 items_bp = Blueprint("items", __name__, url_prefix="/items")

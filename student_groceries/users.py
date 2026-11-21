@@ -1,6 +1,6 @@
 from flask import Blueprint, g, jsonify, request
 from extensions import db
-from student_groceries.auth import token_required
+from student_groceries.security import token_required
 from student_groceries.models import User
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
