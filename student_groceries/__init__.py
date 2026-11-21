@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify
 from config import config
 from extensions import db, migrate
@@ -7,7 +8,7 @@ def create_app(config_name=None):
     app = Flask(__name__)
 
     if config_name is None:
-        config_name = "default"
+        config_name = os.environ.get("FLASK_ENV", "default")
 
     app.config.from_object(config[config_name])
 
@@ -70,5 +71,8 @@ def create_app(config_name=None):
             "error": "Internal server error",
             "details": {"server": "An unexpected internal server error occurred."},
         }), 500
+
+    with app.app_context():
+        db.create_all()
 
     return app

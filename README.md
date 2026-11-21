@@ -1,25 +1,34 @@
 # Grocery Backend
 
-Backend API for student grocery tracking application.
+RESTful Flask backend API for a student grocery tracking application featuring JWT authentication, role-based admin access, item ownership enforcement, centralized validation, and paginated item listing.
 
-## Setup
+## Quickstart (Fresh Clone)
 
-1. Clone the repository.
-2. Create and activate a virtual environment.
-3. Install dependencies from requirements.txt.
-4. Run the Flask application.
+```bash
+git clone https://github.com/THtweety1/grocery-backend.git
+cd grocery-backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+flask --app student_groceries:create_app run --port 5055
+```
 
-## Environment variables
+## Smoke Test
 
-This project reads configuration from a `.env` file in the project root. Create your own `.env` based on `.env.example`.
+In a second terminal:
 
-Current variables:
+```bash
+curl -i http://127.0.0.1:5055/health
+curl -i -X POST http://127.0.0.1:5055/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"eval_user","password":"Password123!"}'
+```
 
-- `FLASK_ENV` – set to `development` for local use.
-- `SECRET_KEY` – set to any non-empty string in development (keep real secrets out of Git).
+## Environment Variables
 
-## Migrations
-
-Database models and migrations are not set up yet in this project.
-
-After cloning, there are no migration commands to run. This section will be updated once database models and migrations are added.
+- `FLASK_ENV` – `development` or `production` (default: `development`)
+- `SECRET_KEY` – Flask session/app secret key
+- `JWT_SECRET_KEY` – Secret key used to sign and verify JWT bearer tokens
+- `JWT_ACCESS_TOKEN_EXPIRES_MINUTES` – Token lifetime in minutes (default: `30`)
+- `DATABASE_URL` – SQLAlchemy database URI (defaults to `sqlite:///dev.db`)
