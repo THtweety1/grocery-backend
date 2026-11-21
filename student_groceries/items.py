@@ -1,3 +1,4 @@
+import math
 from flask import Blueprint, g, jsonify, request
 from extensions import db
 from student_groceries.auth import token_required
@@ -86,15 +87,56 @@ def create_item():
     return jsonify(item.to_dict()), 201
 
 
+DEFAULT_PAGE = 1
+DEFAULT_PER_PAGE = 10
+MAX_PER_PAGE = 50
+
+
 @items_bp.get("")
 @token_required
 def list_items():
-    items = (
-        GroceryItem.query.filter_by(user_id=g.current_user.id)
-        .order_by(GroceryItem.id.asc())
-        .all()
+    raw_page = request.args.get("page", str(DEFAULT_PAGE))
+    raw_per_page = request.args.get("per_page", str(DEFAULT_PER_PAGE))
+
+    details = {}
+
+    try:
+        page = int(raw_page)
+        if page < 1:
+            details["page"] = "Page must be a positive integer."
+    except (TypeError, ValueError):
+        details["page"] = "Page must be a positive integer."
+
+    try:
+        per_page = int(raw_per_page)
+        if per_page < 1:
+            details["per_page"] = "per_page must be a positive integer."
+        elif per_page > MAX_PER_PAGE:
+            details["per_page"] = f"per_page must be {MAX_PER_PAGE} or fewer."
+    except (TypeError, ValueError):
+        details["per_page"] = "per_page must be a positive integer."
+
+    if details:
+        return jsonify({
+            "error": "Bad Request",
+            "details": details,
+        }), 400
+
+    base_query = GroceryItem.query.filter_by(user_id=g.current_user.id).order_by(
+        GroceryItem.id.asc()
     )
-    return jsonify([item.to_dict() for item in items]), 200
+    offset = (page - 1) * per_page
+    total = base_query.count()
+    items = base_query.limit(per_page).offset(offset).all()
+    pages = math.ceil(total / per_page) if total > 0 else 0
+
+    return jsonify({
+        "items": [item.to_dict() for item in items],
+        "page": page,
+        "per_page": per_page,
+        "total": total,
+        "pages": pages,
+    }), 200
 
 
 @items_bp.get("/<int:item_id>")
