@@ -25,7 +25,7 @@ def upgrade():
     sa.Column('quantity', sa.Integer(), server_default='1', nullable=False),
     sa.Column('category', sa.String(length=80), nullable=True),
     sa.Column('notes', sa.Text(), nullable=True),
-    sa.Column('purchased', sa.Boolean(), server_default=sa.text('0'), nullable=False),
+    sa.Column('purchased', sa.Boolean(), server_default=sa.false(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
